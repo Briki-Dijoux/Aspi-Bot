@@ -77,13 +77,10 @@ void loop() {
     }
     data = char(Bt.read());
     if (data=='S'){ // arrêt du nettoyage
+      analogWrite(ENA,0);
+      analogWrite(ENB,0);
       cleaning=0;
     }
-  }
-
-  if (cleaning==0){
-    analogWrite(ENA,0);
-    analogWrite(ENB,0);
   }
   
   while (Bt.available()) {
