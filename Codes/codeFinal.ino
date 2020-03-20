@@ -9,20 +9,18 @@ char data;
 SoftwareSerial Bt(RX,TX);
 
 //-- MOTEUR A --
-int ENA=9; //Connecté à Arduino pin 9(sortie PWM)
+int ENA=8; //Connecté à Arduino pin 9(sortie PWM)
 int IN1=4; //Connecté à Arduino pin 4
 int IN2=5; //Connecté à Arduino pin 5
 
 //-- MOTEUR B --
-int ENB=10; //Connecté à Arduino pin 10(Sortie PWM)
+int ENB=9; //Connecté à Arduino pin 10(Sortie PWM)
 int IN3=6; //Connecté à Arduino pin 6
 int IN4=7; //Connecté à Arduino pin
 
-//-- Capteur droite --
-int CaptD = 2;
+//capt choc
+int Capt = 11;
 
-//-- Capteur gauche --
-int CaptG = 3;
 
 //variable pour l'activation du nettoyage
 int cleaning;
@@ -33,8 +31,7 @@ void setup() {
   Serial.println("ouais ouais ouais");
   Bt.begin(9600);
   //capteurs
-  pinMode(CaptD,INPUT);
-  pinMode(CaptG,INPUT);
+  pinMode(Capt,INPUT);
   // moteur
   pinMode(ENA,OUTPUT);
   pinMode(ENB,OUTPUT);
@@ -52,27 +49,30 @@ void setup() {
   digitalWrite(ENA,LOW);// Moteur A - Ne pas tourner
   digitalWrite(ENB,LOW);// Moteur B - Ne pas tourner
   
-  cleaning = 0;
+  cleaning = 1;
 }
 
 void loop() {
+  //Serial.println(digitalRead(Capt));
   if (cleaning==1) {
-    analogWrite(ENA,255);
-    analogWrite(ENB,255);
+    analogWrite(ENA,130);
+    analogWrite(ENB,130);
     while (!Bt.available()) { // tant que le module bluetooth n'est pas sollicité
-      if ((digitalRead(CaptG)==0) || (digitalRead(CaptD)==0)) { //choc détecté
-        delay(50);
+      if (digitalRead(Capt)==0) { //choc détecté
+        //delay(50);
         digitalWrite(IN1,HIGH); //on fait reculer la roue gauche
         digitalWrite(IN2,LOW);
         digitalWrite(IN3,LOW); //on fait reculer la roue droite
         digitalWrite(IN4,HIGH);
-        analogWrite(ENB,100); //on fait tourner vers la gauche (moteur droit tourne moins vite)
+        analogWrite(ENB,30); //on fait tourner vers la gauche (moteur droit tourne moins vite)
+        analogWrite(ENA,250);
         delay(1000); //temps de rotation
         digitalWrite(IN1,LOW); //on refait avancer tout droit jusqu'à un nouveau choc ou l'arrêt
         digitalWrite(IN2,HIGH);
         digitalWrite(IN3,HIGH); 
         digitalWrite(IN4,LOW);
-        analogWrite(ENB,255);
+        analogWrite(ENB,130);
+        analogWrite(ENA,130);
       }
     }
     data = char(Bt.read());
@@ -84,7 +84,6 @@ void loop() {
   }
   
   while (Bt.available()) {
-    Serial.print("OK");
     Serial.print(char(Bt.read()));
     data = char(Bt.read());
     if (data=='C'){ // lancement du nettoyage
