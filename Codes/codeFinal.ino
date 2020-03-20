@@ -49,7 +49,7 @@ void setup() {
   digitalWrite(ENA,LOW);// Moteur A - Ne pas tourner
   digitalWrite(ENB,LOW);// Moteur B - Ne pas tourner
   
-  cleaning = 1;
+  cleaning = 0; //à initialiser à 1 si le module BT ne fonctionne pas
 }
 
 void loop() {
